@@ -25,7 +25,7 @@ class Training:
     """Базовый класс тренировки."""
     LEN_STEP: float = 0.65
     M_IN_KM: float = 1000
-    
+
     def __init__(self,
                  action: int,
                  duration: float,
@@ -83,7 +83,7 @@ class SportsWalking(Training):
         calorie_1 = 0.035
         calorie_2 = 0.029
         return (
-               (calorie_1 * self.weight 
+               (calorie_1 * self.weight
                + (self.get_mean_speed()**2 // self.height)
                * calorie_2 * self.weight) * (self.duration * 60)
                )
@@ -92,6 +92,7 @@ class SportsWalking(Training):
 class Swimming(Training):
     """Тренировка: плавание."""
     LEN_STEP: float = 1.38
+
     def __init__(self,
                  action: int,
                  duration: float,
