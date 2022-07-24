@@ -106,7 +106,7 @@ class Swimming(Training):
         return ((self.get_mean_speed()) + 1.1) * 2 * self.weight
 
     def get_mean_speed(self) -> float:
-        return (self.length_pool * self.count_pool 
+        return (self.length_pool * self.count_pool
                / self.M_IN_KM / self.duration)
 
 
@@ -120,13 +120,13 @@ def read_package(workout_type: str, data: list) -> Training:
     if workout_type in classes:
         return classes[workout_type](*data)
     else:
-        return f('Не то')
+        print("Не то")
 
 
 def main(training: Training) -> None:
     """Главная функция."""
     info = training.show_training_info()
-    print(info.get_message())   
+    print(info.get_message())
 
 
 if __name__ == '__main__':
