@@ -48,10 +48,10 @@ class Training:
     def show_training_info(self) -> InfoMessage:
         """Вернуть информационное сообщение о выполненной тренировке."""
         return (InfoMessage(type(self).__name__,
-                          self.duration,
-                          self.get_distance(),
-                          self.get_mean_speed(),
-                          self.get_spent_calories()))
+                self.duration,
+                self.get_distance(),
+                self.get_mean_speed(),
+                self.get_spent_calories()))
 
 
 class Running(Training):
@@ -62,8 +62,9 @@ class Running(Training):
 
     def get_spent_calories(self) -> float:
         return ((self.speed_multiplicator * self.get_mean_speed()
-               - self.coeff_calorie) * self.weight / self.SPEED_KMH
-              * (self.duration * self.sixty_minutes))
+                - self.coeff_calorie) * self.weight / self.SPEED_KMH
+                * (self.duration * self.sixty_minutes))
+
 
 class SportsWalking(Training):
     """Тренировка: спортивная ходьба."""
@@ -81,8 +82,8 @@ class SportsWalking(Training):
         calorie_1 = 0.035
         calorie_2 = 0.029
         return ((calorie_1 * self.weight
-              + (self.get_mean_speed()**2 // self.height)
-               * calorie_2 * self.weight) * (self.duration * 60))
+                + (self.get_mean_speed()**2 // self.height)
+                * calorie_2 * self.weight) * (self.duration * 60))
 
 
 class Swimming(Training):
@@ -103,12 +104,13 @@ class Swimming(Training):
         self.count_pool = count_pool
 
     def get_spent_calories(self) -> float:
-        return (((self.get_mean_speed()) + self.plus_coef_speed) 
+        return (((self.get_mean_speed()) + self.plus_coef_speed)
                 * self.multiplicator_of_weight * self.weight)
 
     def get_mean_speed(self) -> float:
         return (self.length_pool * self.count_pool
-              / self.SPEED_KMH / self.duration)
+                / self.SPEED_KMH / self.duration)
+
 
 types_of_workout_classes = {
         "SWM": Swimming,
