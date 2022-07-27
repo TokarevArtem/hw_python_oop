@@ -113,10 +113,11 @@ class Swimming(Training):
 
 
 types_of_workout_classes = {
-        "SWM": Swimming,
-        "RUN": Running,
-        "WLK": SportsWalking
-    }
+    "SWM": Swimming,
+    "RUN": Running,
+    "WLK": SportsWalking
+}
+
 
 def read_package(workout_type: str, data: Sequence[float]) -> Training:
     """Прочитать данные полученные от датчиков."""
