@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
 from typing import Union, List, Dict
 
 
@@ -10,31 +10,21 @@ class InfoMessage:
     distance: float
     speed: float
     calories: float
-    training_message = ('Тип тренировки: {training_type}; '
-                        'Длительность: {duration:.3f} ч.; '
-                        'Дистанция: {distance:.3f} км; '
-                        'Ср. скорость: {speed:.3f} км/ч; '
-                        'Потрачено ккал: {calories:.3f}.')
+    TRAINING_MESSAGE: str = ('Тип тренировки: {training_type}; '
+                             'Длительность: {duration:.3f} ч.; '
+                             'Дистанция: {distance:.3f} км; '
+                             'Ср. скорость: {speed:.3f} км/ч; '
+                             'Потрачено ккал: {calories:.3f}.')
 
     def get_message(self) -> str:
-        return self.training_message.format(training_type=self.training_type,
-                                            duration=self.duration,
-                                            distance=self.distance,
-                                            speed=self.speed,
-                                            calories=self.calories)
+        return self.TRAINING_MESSAGE.format(**asdict(self))
 
 
 class Training:
     """Базовый класс тренировки."""
     LEN_STEP: float = 0.65
     M_IN_KM: float = 1000
-    speed_multiplicator: float = 18
-    coeff_calorie: float = 20
-    sixty_minutes: float = 60
-    calorie_1 = 0.035
-    calorie_2 = 0.029
-    plus_coef_speed: float = 1.1
-    multiplicator_of_weight: float = 2
+    SIXTY_MINUTES: float = 60
 
     def __init__(self,
                  action: int,
@@ -67,15 +57,19 @@ class Training:
 
 class Running(Training):
     """Тренировка: бег."""
+    SPEED_MULTIPLICATOR: float = 18
+    COEFF_CALORIE: float = 20
 
     def get_spent_calories(self) -> float:
-        return ((self.speed_multiplicator * self.get_mean_speed()
-                - self.coeff_calorie) * self.weight / self.M_IN_KM
-                * (self.duration * self.sixty_minutes))
+        return ((self.SPEED_MULTIPLICATOR * self.get_mean_speed()
+                - self.COEFF_CALORIE) * self.weight / self.M_IN_KM
+                * (self.duration * self.SIXTY_MINUTES))
 
 
 class SportsWalking(Training):
     """Тренировка: спортивная ходьба."""
+    CALORIE_1 = 0.035
+    CALORIE_2 = 0.029
 
     def __init__(self,
                  action: int,
@@ -86,15 +80,17 @@ class SportsWalking(Training):
         self.height: float = height
 
     def get_spent_calories(self) -> float:
-        return ((self.calorie_1 * self.weight
+        return ((self.CALORIE_1 * self.weight
                 + (self.get_mean_speed()**2 // self.height)
-                * self.calorie_2 * self.weight)
-                * (self.duration * self.sixty_minutes))
+                * self.CALORIE_2 * self.weight)
+                * (self.duration * self.SIXTY_MINUTES))
 
 
 class Swimming(Training):
     """Тренировка: плавание."""
     LEN_STEP: float = 1.38
+    PLUS_COEF_SPEED: float = 1.1
+    MULTIPLICATOR_OF_WEIGHT: float = 2
 
     def __init__(self,
                  action: int,
@@ -107,23 +103,26 @@ class Swimming(Training):
         self.count_pool: float = count_pool
 
     def get_spent_calories(self) -> float:
-        return (((self.get_mean_speed()) + self.plus_coef_speed)
-                * self.multiplicator_of_weight * self.weight)
+        return (((self.get_mean_speed()) + self.PLUS_COEF_SPEED)
+                * self.MULTIPLICATOR_OF_WEIGHT * self.weight)
 
     def get_mean_speed(self) -> float:
         return (self.length_pool * self.count_pool
                 / self.M_IN_KM / self.duration)
 
 
+TYPES_OF_WORKOUT_CLASSES: Dict[str, float] = {"SWM": Swimming,
+                                              "RUN": Running,
+                                              "WLK": SportsWalking}
+
+
 def read_package(workout_type: str,
-                 data: Union[List[int], List[float]]) -> Training:
+                 data: List[Union[int, float]]) -> Training:
     """Прочитать данные полученные от датчиков."""
-    types_of_workout_classes: Dict = {"SWM": Swimming,
-                                      "RUN": Running,
-                                      "WLK": SportsWalking}
-    if workout_type in types_of_workout_classes:
-        return types_of_workout_classes[workout_type](*data)
-    raise AttributeError('Неизвестный тип тренировки')
+    if workout_type in TYPES_OF_WORKOUT_CLASSES:
+        return TYPES_OF_WORKOUT_CLASSES[workout_type](*data)
+    raise AttributeError('Неизвестный тип тренировки'
+                         ' доступны - Swimming, Running, SportsWalking')
 
 
 def main(training: Training) -> None:
